@@ -20,6 +20,7 @@ env/
 *.pyc
 db.sqlite3
 media/
+static/
 staticfiles/
 static_root/
 celerybeat-schedule*

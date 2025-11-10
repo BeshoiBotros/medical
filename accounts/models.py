@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None):
@@ -18,7 +19,7 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, date_of_birth, password=None):
+    def create_superuser(self, email, password=None):
         """
         Creates and saves a superuser with the given email, date of
         birth and password.
@@ -26,14 +27,13 @@ class CustomUserManager(BaseUserManager):
         user = self.create_user(
             email,
             password=password,
-            date_of_birth=date_of_birth,
         )
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
         return user
 
-class CustomUser(AbstractBaseUser):
+class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     ROLE_CHOICES = [
         ('doctor', 'Doctor'),
@@ -77,6 +77,11 @@ class CustomUser(AbstractBaseUser):
     ]
     
     email = models.EmailField(max_length=255, verbose_name="Email Address", unique=True)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    last_login = models.DateTimeField(null=True, blank=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
     role =  models.CharField(max_length=10, choices=ROLE_CHOICES, null=True, blank=True)
     is_available = models.BooleanField(default=True)
     bio = models.TextField(max_length=500, blank=True, null=True)
@@ -87,3 +92,13 @@ class CustomUser(AbstractBaseUser):
     objects = CustomUserManager()
 
     USERNAME_FIELD = "email"
+
+    def has_perm(self, perm, obj=None):
+        if self.is_superuser:
+            return True
+        return super().has_perm(perm, obj)
+
+    def has_module_perms(self, app_label):
+        if self.is_superuser:
+            return True
+        return super().has_module_perms(app_label)

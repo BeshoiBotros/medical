@@ -15,7 +15,7 @@ class Schedule(models.Model):
     day = models.CharField(choices=WEEK_DAY)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    doctor = models.ForeignKey('accounts.CustomUser', related_name='doctor_schedule')
+    doctor = models.ForeignKey('accounts.CustomUser', related_name='doctor_schedule', on_delete=models.CASCADE)
 
 class Appointment(models.Model):
 
@@ -25,9 +25,9 @@ class Appointment(models.Model):
         ('R', 'Rejected'),
     ]
 
-    patient = models.ForeignKey('accounts.CustomUser', related_name='patient_appointment')
-    doctor = models.ForeignKey('accounts.CustomUser', related_name='doctor_appointment')
-    schedule = models.ForeignKey(Schedule)
+    patient = models.ForeignKey('accounts.CustomUser', related_name='patient_appointment', on_delete=models.CASCADE)
+    doctor = models.ForeignKey('accounts.CustomUser', related_name='doctor_appointment', on_delete=models.CASCADE)
+    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     status = models.CharField(choices=STATUS_CHOICES, default='W')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

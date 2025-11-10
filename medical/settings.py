@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-s&2&pq!o4cs)a&=bn)9y7pag9k2s=+0f%a67w%*)$+o863n^6z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'carmate.smartsminds.com',
+    '127.0.0.1',
+    'localhost',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',

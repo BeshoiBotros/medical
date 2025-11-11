@@ -1,4 +1,5 @@
 from django.db import models
+import datetime
 
 class Schedule(models.Model):
     
@@ -35,12 +36,13 @@ class Appointment(models.Model):
     doctor = models.ForeignKey('accounts.CustomUser', related_name='doctor_appointment', on_delete=models.CASCADE)
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     status = models.CharField(choices=STATUS_CHOICES, default='W')
+    start_time = models.TimeField(default=datetime.time(0, 0))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     cancle = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('patient', 'doctor', 'schedule')
+        unique_together = [('patient', 'doctor', 'schedule'), ('doctor', 'schedule', 'start_time')]
         ordering = ['-created_at']
 
 

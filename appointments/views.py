@@ -13,7 +13,7 @@ class ScheduleView(APIView):
         if self.request.method == 'GET':
             return []
         else:
-            return [IsDoctor]
+            return [IsDoctor()]
         
     def get(self, request: Request, schedule_pk=None, doctor_pk=None):
         

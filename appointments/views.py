@@ -16,6 +16,13 @@ class ScheduleView(APIView):
             return [IsDoctor()]
         
     def get(self, request: Request, schedule_pk=None, doctor_pk=None):
+
+        self_param = request.query_params.get('self', False)
+        queryset = appointments_models.Schedule.objects.filter(doctor=request.user.pk)
+
+        if self_param:
+            serializer = ScheduleSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         
         if schedule_pk:
             instance = get_object_or_404(appointments_models.Schedule, pk=schedule_pk)

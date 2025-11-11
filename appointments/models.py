@@ -1,5 +1,9 @@
 from django.db import models
 import datetime
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from datetime import time
+from accounts.models import CustomUser
 
 class Schedule(models.Model):
     
@@ -46,3 +50,15 @@ class Appointment(models.Model):
         ordering = ['-created_at']
 
 
+@receiver(post_save, sender=CustomUser)
+def create_doctor_schedules(sender, instance, created, **kwargs):
+    if created and instance.role == 'doctor':
+        for day_code, _ in Schedule.WEEK_DAY:
+            Schedule.objects.create(
+                day=day_code,
+                start_time=time(9, 0),
+                end_time=time(17, 0),
+                doctor=instance,
+                is_available=False,
+                min_session_duration=30
+            )

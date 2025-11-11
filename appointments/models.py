@@ -19,6 +19,10 @@ class Schedule(models.Model):
     is_available = models.BooleanField(default=True)
     min_session_duration = models.PositiveIntegerField(default=30)
 
+    class Meta:
+        unique_together = ('day', 'doctor')
+        ordering = ['-start_time']
+
 class Appointment(models.Model):
 
     STATUS_CHOICES = [

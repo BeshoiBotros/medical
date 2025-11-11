@@ -4,7 +4,7 @@ from accounts import models as accounts_models
 from accounts import serializers as accounts_serializers
 
 class ScheduleSerializer(serializers.ModelSerializer):
-
+    doctor = serializers.HiddenField(default=serializers.CurrentUserDefault())
     class Meta:
         model = Schedule
         fields = '__all__'

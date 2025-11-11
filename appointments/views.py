@@ -36,19 +36,19 @@ class ScheduleView(APIView):
 
     def post(self, request: Request):
         
-        serializer = ScheduleSerializer(data=request.data)
+        serializer = ScheduleSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request: Request, id):
-        schedule: appointments_models.Schedule = get_object_or_404(appointments_models.Schedule, pk=id)
+    def patch(self, request: Request, schedule_pk):
+        schedule: appointments_models.Schedule = get_object_or_404(appointments_models.Schedule, pk=schedule_pk)
         if schedule.doctor != request.user:
             return Response({'detail' : 'Not Found 404 Or You Try To Update Another Doctor Schedule!'}, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = ScheduleSerializer(instance=schedule, partial=True)
-        if serializer.valid():
+        serializer = ScheduleSerializer(instance=schedule, data=request.data, partial=True)
+        if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         

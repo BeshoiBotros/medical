@@ -74,14 +74,33 @@ class AvailableSlotsView(APIView):
 
         if schedule_pk:
             schedule = get_object_or_404(appointments_models.Schedule, pk=schedule_pk)
+            if not schedule.is_available:
+                return Response({'detail': 'Schedule not available'}, status=status.HTTP_400_BAD_REQUEST)
+            serialized = ScheduleSerializer(schedule).data
+            serialized['available_slots'] = self.get_available_slots(schedule)
+            return Response(serialized, status=status.HTTP_200_OK)
+
         elif doctor_pk and day:
             schedule = get_object_or_404(appointments_models.Schedule, doctor=doctor_pk, day=day)
+            if not schedule.is_available:
+                return Response({'detail': 'Schedule not available'}, status=status.HTTP_400_BAD_REQUEST)
+            serialized = ScheduleSerializer(schedule).data
+            serialized['available_slots'] = self.get_available_slots(schedule)
+            return Response(serialized, status=status.HTTP_200_OK)
+
+        elif doctor_pk:
+            schedules = appointments_models.Schedule.objects.filter(doctor=doctor_pk, is_available=True)
+            result = []
+            for schedule in schedules:
+                serialized = ScheduleSerializer(schedule).data
+                serialized['available_slots'] = self.get_available_slots(schedule)
+                result.append(serialized)
+            return Response({'schedules': result}, status=status.HTTP_200_OK)
+
         else:
-            return Response({'detail': 'Provide schedule_pk or doctor_pk and day'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Provide schedule_pk or doctor_pk (with optional day)'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not schedule.is_available:
-            return Response({'detail': 'Schedule not available'}, status=status.HTTP_400_BAD_REQUEST)
-
+    def get_available_slots(self, schedule):
         start = schedule.start_time
         end = schedule.end_time
         duration_delta = timedelta(minutes=schedule.min_session_duration)
@@ -101,7 +120,7 @@ class AvailableSlotsView(APIView):
             current = datetime.combine(date.today(), current_time) + duration_delta
             current_time = current.time()
 
-        return Response({'available_slots': available}, status=status.HTTP_200_OK)
+        return available
 
 class AppointmentView(APIView):
 

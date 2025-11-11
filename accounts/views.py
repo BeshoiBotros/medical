@@ -3,11 +3,16 @@ from medical.utils import IsDoctor, IsPatient
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
-from .serializers import CustomUserSerializer, DoctorSerializer, PatientSerializer, SubProfileSerializer
+from .serializers import CustomUserSerializer, DoctorSerializer, PatientSerializer, SubProfileSerializer, CustomTokenObtainPairSerializer
 from . import models as accounts_models
 from rest_framework.permissions import IsAuthenticated
 from medical.utils import get_object_or_404
 from .filters import DoctorFilter, PatientFilter
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
 
 class RegisterView(APIView):
 

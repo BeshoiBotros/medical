@@ -7,11 +7,11 @@ class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
 
 class DoctorFilter(django_filters.FilterSet):
     medical_spesification = CharInFilter(field_name='medical_spesification', lookup_expr='in')
-    first_name = CharInFilter(field_name='first_name', lookup_expr='icontains')
-    email = CharInFilter(field_name='email', lookup_expr='in')
+    first_name = django_filters.CharFilter(field_name='first_name', lookup_expr='icontains')
+    email = django_filters.CharFilter(field_name='email', lookup_expr='icontains')
     is_available = django_filters.BooleanFilter(field_name='is_available', lookup_expr='exact')
-    phone_number = CharInFilter(field_name='phone_number', lookup_expr='icontains')
-    address = CharInFilter(field_name='address', lookup_expr='icontains')
+    phone_number = django_filters.CharFilter(field_name='phone_number', lookup_expr='icontains')
+    address = django_filters.CharFilter(field_name='address', lookup_expr='icontains')
 
     class Meta:
         model = CustomUser

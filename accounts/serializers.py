@@ -34,3 +34,9 @@ class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['id', 'email', 'password', 'image', 'phone_number', 'first_name', 'last_name', 'role']
+
+class SubProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'first_name', 'last_name', 'image']

@@ -3,7 +3,7 @@ from medical.utils import IsDoctor, IsPatient
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
-from .serializers import CustomUserSerializer, DoctorSerializer, PatientSerializer
+from .serializers import CustomUserSerializer, DoctorSerializer, PatientSerializer, SubProfileSerializer
 from . import models as accounts_models
 from rest_framework.permissions import IsAuthenticated
 from medical.utils import get_object_or_404
@@ -24,7 +24,7 @@ class DoctorView(APIView):
 
     def get_permissions(self):
         if self.request.method == 'GET':
-            return [IsAuthenticated()]
+            return []
         elif self.request.method == 'PATCH':
             return [IsDoctor()]
         return super().get_permissions()
@@ -39,8 +39,8 @@ class DoctorView(APIView):
         queryset = accounts_models.CustomUser.objects.filter(role='doctor')
         filterset = DoctorFilter(request.query_params, queryset=queryset)
         
-        if filterset.is_valid():
-            queryset = filterset.qs
+        # if filterset.is_valid():
+        queryset = filterset.qs
         
         doctor_serializer = DoctorSerializer(queryset, many=True)
         return Response(doctor_serializer.data, status=status.HTTP_200_OK)
@@ -74,8 +74,8 @@ class PatientView(APIView):
         queryset = accounts_models.CustomUser.objects.filter(role='Patient')
         filterset = PatientFilter(request.query_params, queryset=queryset)
 
-        if filterset.is_valid():
-            queryset = filterset.qs
+        # if filterset.is_valid():
+        queryset = filterset.qs
         
         serializer = PatientSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -88,3 +88,11 @@ class PatientView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request):
+        user = request.user
+        serializer = SubProfileSerializer(instance=user)
+        return Response(serializer.data, status=status.HTTP_200_OK)

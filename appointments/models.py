@@ -13,9 +13,11 @@ class Schedule(models.Model):
     ]
     
     day = models.CharField(choices=WEEK_DAY)
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
     doctor = models.ForeignKey('accounts.CustomUser', related_name='doctor_schedule', on_delete=models.CASCADE)
+    is_available = models.BooleanField(default=True)
+    min_session_duration = models.PositiveIntegerField(default=30)
 
 class Appointment(models.Model):
 
@@ -31,6 +33,7 @@ class Appointment(models.Model):
     status = models.CharField(choices=STATUS_CHOICES, default='W')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    cancle = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('patient', 'doctor', 'schedule')

@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission
 from rest_framework.response import Response
 from rest_framework import status
+from django.http import Http404
 
 class IsDoctor(BasePermission):
     def has_permission(self, request, view):
@@ -12,19 +13,14 @@ class IsPatient(BasePermission):
         return bool(request.user and hasattr(request.user, 'role') and request.user.role == 'patient')
     
 def _get_queryset(klass):
-    """
-    Return a QuerySet or a Manager.
-    Duck typing in action: any class with a `get()` method (for
-    get_object_or_404) or a `filter()` method (for get_list_or_404) might do
-    the job.
-    """
+
     # If it is a model class or anything else with ._default_manager
     if hasattr(klass, "_default_manager"):
         return klass._default_manager.all()
     return klass
 
+def get_object_or_404(klass, error="404 Not Founded",*args, **kwargs):
 
-def get_object_or_404(klass, *args, **kwargs):
     queryset = _get_queryset(klass)
     if not hasattr(queryset, "get"):
         klass__name = (
@@ -37,4 +33,6 @@ def get_object_or_404(klass, *args, **kwargs):
     try:
         return queryset.get(*args, **kwargs)
     except queryset.model.DoesNotExist:
-        return Response({'error' : '404 Not Found'}, status=status.HTTP_404_NOT_FOUND)
+        raise Http404(
+            error
+        )

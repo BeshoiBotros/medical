@@ -35,6 +35,13 @@ class DoctorView(APIView):
         return super().get_permissions()
 
     def get(self, request: Request, id=None):
+
+        self_param = request.query_params.get('self', False)
+        print(self_param)
+
+        if self_param:
+            serializer = DoctorSerializer(instance=request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         
         if id:
             queryset = get_object_or_404(accounts_models.CustomUser, role='doctor', pk=id)
@@ -70,6 +77,13 @@ class PatientView(APIView):
         return super().get_permissions()
 
     def get(self, request: Request, id=None):
+
+        self_param = request.query_params.get('self', False)
+        print(self_param)
+
+        if self_param:
+            serializer = PatientSerializer(instance=request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         
         if id:
             queryset = get_object_or_404(accounts_models.CustomUser, role='patient', pk=id)
